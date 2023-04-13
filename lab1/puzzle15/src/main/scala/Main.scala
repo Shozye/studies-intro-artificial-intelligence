@@ -2,9 +2,11 @@ package studies.wsi.puzzle
 
 import board.Board
 import game.SearchResult.Failure
-import game.{SearchResult, Solver}
+import game.{SearchResult, Solver, SolverUtils}
 import heuristics.*
 import neighbourings.SingleMoveNeighbouring
+
+import java.io.{BufferedWriter, File, FileWriter}
 
 object Main extends App{
   val heurs: Vector[Heuristic] = Vector(
@@ -13,9 +15,57 @@ object Main extends App{
     ManhattanLinearConflictsHeuristics,
     ManhattanUpgraded
   )
-  run_tests(MManhattanLinearConflictsHeuristics)
 
-  //for heur <- heurs do run_tests(heur)
+  testHeuristicOnResources(ManhattanUpgraded)
+  private def testHeuristicOnResources(heuristic: Heuristic): Unit = {
+    var data = Seq[String]()
+
+    for i <- 1 to 100 do {
+      var instanceData = Seq[String]()
+      val filename = s"board$i"
+      val filepath = s"generated/$filename"
+      val board = Board.fromResource(filepath)
+      val result =
+        Solver.solve(
+          board,
+          heuristic,
+          SingleMoveNeighbouring
+        )
+      result match
+        case SearchResult.Success(distance, path, visited, time) =>
+          instanceData = instanceData :++ Seq(filename, distance.toString, visited.toString, time.toString)
+        case Failure => println("XD")
+
+      val str: String = instanceData.mkString(", ")
+      println(str)
+
+      data = data :+ str
+      writeFile(
+        "ManhattanUpgraded",
+        data.mkString("\n") + "\n"
+      )
+    }
+  }
+
+  private def createResources(amountResources: Int): Unit = {
+    var i = 1
+    while i <= amountResources do {
+      val board = Board.getRandom(4)
+      if (SolverUtils.isSolvable(board)){
+        writeFile(s"src/main/resources/generated/board$i", board.board.mkString(", "))
+        i+=1
+      }
+    }
+  }
+
+  def writeFile(filename: String, s: String): Unit = {
+    val file = {
+      new File(filename)
+    }
+    val bw = new BufferedWriter(new FileWriter(file))
+    bw.write(s)
+    bw.close()
+  }
 
   private def run_tests(heuristic: Heuristic): Unit = {
     println(s"Running tests for ${heuristic.toString}")
