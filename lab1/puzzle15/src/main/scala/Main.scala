@@ -16,11 +16,14 @@ object Main extends App{
     ManhattanUpgraded
   )
 
-  testHeuristicOnResources(ManhattanUpgraded)
-  private def testHeuristicOnResources(heuristic: Heuristic): Unit = {
+  testHeuristicOnResources(ManhattanDistanceHeuristics, "ManhattanDistance")
+  private def testHeuristicOnResources(heuristic: Heuristic, output_filename: String): Unit = {
     var data = Seq[String]()
 
-    for i <- 1 to 100 do {
+    for {
+      i <- (80 to 100)
+      if (!Vector(3, 7, 12, 13, 16, 17, 18, 22, 29, 51, 62, 70, 71, 76, 91, 93, 95, 96, 99, 100).contains(i))
+    } do {
       var instanceData = Seq[String]()
       val filename = s"board$i"
       val filepath = s"generated/$filename"
@@ -41,7 +44,7 @@ object Main extends App{
 
       data = data :+ str
       writeFile(
-        "ManhattanUpgraded",
+        output_filename,
         data.mkString("\n") + "\n"
       )
     }

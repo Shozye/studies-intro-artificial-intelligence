@@ -75,8 +75,7 @@ object Search {
       val (_, _, currBoard) = pq.dequeue()
       after = Instant.now().toEpochMilli
       visited += 1
-
-
+      
       // If we've found the goal, reconstruct the path and return Success
       if (currBoard.isSolved) {
         val path = reconstructPath(parent_tree, currBoard)
