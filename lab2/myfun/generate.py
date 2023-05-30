@@ -69,6 +69,30 @@ with open("wins.json", 'w+') as file:
 with open("loss.json", 'w+') as file:
     file.write(json.dumps(loseStatesPerMove, indent=4))
     
+def printStates(main_list, filename):
+    text = ""
+    text += "Array(\n"
+    state_i = 0
+    for state in main_list:
+        text += "\t"
+        text += "("
+        
+        text += ", ".join([str(tile[0]*5 + tile[1]).rjust(2) for tile in state])
+
+        text += "),"
+        state_i += 1
+        if state_i % 2 == 0:
+            text += "\n"
+        else:
+            text += " "
+    
+    text += "\n)"
+    with open(filename, 'w+') as file:
+        file.write(text)
+    
+printStates(winStates, "win_scalastates.txt")
+printStates(loseStates, "lose_scalastates.txt")
+"""
 file = open("win.txt", 'w+')
 for key,value in winStatesPerMove.items():
     file.write(f"({key[0]}, {key[1]}) -> Seq({', '.join(map(lambda x: 'Seq(' + str(x)[1:-1] + ')', value))})")
@@ -80,4 +104,37 @@ for key,value in loseStatesPerMove.items():
     file.write(f"({key[0]}, {key[1]}) -> Seq({', '.join(map(lambda x: 'Seq(' + str(x)[1:-1] + ')', value))})")
     file.write(",\n")
 file.close()
+
+print(winStatesPerMove)
+
+def printStates(main_list, filename):
+    text = "ArraySeq(\n"
+    for rowcol in range(25):
+        row = rowcol // 5
+        col = rowcol % 5
+        key = f"{row}{col}"
+
+        
+        text += "List("
+        for i, state in enumerate(main_list[key]):
+            text += "Array(" 
+            text += ", ".join("(" + f"{tile[0] * 5 + tile[1]}" + ")" for tile in state)
+            text += ")"
+            if i != len(main_list[key]) - 1:
+                text += ", "
+        text += ")"
+        if rowcol != 44:
+            text += ","
+        text += "\n"
+    text += ")"
+    
+        
+    with open(filename, 'w+') as file:
+        file.write(text)
+
+#printStates(winStatesPerMove,"win_scala.txt")
+#printStates(loseStatesPerMove,"lose_scala.txt")
+    
+    
+"""
         
